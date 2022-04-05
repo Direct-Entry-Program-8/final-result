@@ -1,4 +1,11 @@
 var particles = [];
+var mouseX = null;
+var mouseY = null;
+
+addEventListener('mousemove', function(e){
+    mouseX = e.pageX;
+    mouseY = e.pageY;
+});
 
 function Particle(){
 
@@ -24,9 +31,8 @@ function Particle(){
     document.body.append(elm);
 
     this.divElm = elm;
-    this.dx = (5 + (Math.random() * 10)) * (Math.round(Math.random()) * 2  - 1);
-    this.dy = (5 + (Math.random() * 10)) * (Math.random() > 0.5 ? 1 : -1) ;
-
+    this.dx = (5 + (Math.random() * 5)) * (Math.round(Math.random()) * 2  - 1);
+    this.dy = (5 + (Math.random() * 5)) * (Math.random() > 0.5 ? 1 : -1) ;
 }
 
 Particle.prototype.move = function(){
@@ -52,6 +58,52 @@ Particle.prototype.move = function(){
     if (xPos < 0){
         xPos = 0;
         this.dx = -this.dx;
+    }
+
+    var xElmCenter = xPos + this.divElm.offsetWidth / 2;
+    var yElmCenter = yPos + this.divElm.offsetHeight / 2;
+
+    var elmRadius = Math.hypot(this.divElm.offsetWidth / 2, 
+                                this.divElm.offsetHeight / 2);
+    
+    var pointerRadius = 70;
+
+    var xDiff = xElmCenter - mouseX;
+    var yDiff = yElmCenter - mouseY;
+    var distance = Math.hypot(xDiff, yDiff);
+    var hide = document.getElementsByClassName('pointer')[0].classList.contains('hide');
+
+    if (distance <= pointerRadius  + elmRadius && !hide){
+
+        var r = pointerRadius + elmRadius + 1;
+        var slope = yDiff / xDiff;
+        var angle = Math.atan(slope);
+
+        var translateY = r * Math.sin(angle);
+        var translateX = r * Math.cos(angle);
+        
+        if (xDiff < 0 && yDiff < 0){
+            this.dx = -Math.abs(this.dx);
+            this.dy = -Math.abs(this.dy);
+            xPos = mouseX - translateX - this.divElm.offsetWidth / 2;
+            yPos = mouseY - translateY - this.divElm.offsetHeight / 2;
+        }else if (xDiff > 0 && yDiff < 0){
+            this.dx = Math.abs(this.dx);
+            this.dy = -Math.abs(this.dy);
+            xPos = mouseX  + translateX - this.divElm.offsetWidth / 2;
+            yPos = mouseY + translateY - this.divElm.offsetHeight / 2;
+        }else if(xDiff > 0 & yDiff > 0){
+            this.dx = Math.abs(this.dx);
+            this.dy = Math.abs(this.dy);
+            xPos = mouseX + translateX - this.divElm.offsetWidth / 2;
+            yPos = mouseY + translateY - this.divElm.offsetHeight / 2;
+        }else{
+            this.dx = -Math.abs(this.dx);
+            this.dy = Math.abs(this.dy);
+            xPos = mouseX - translateX - this.divElm.offsetWidth / 2;
+            yPos = mouseY - translateY - this.divElm.offsetHeight / 2;
+        }
+
     }
 
     this.divElm.style.left = xPos + "px";

@@ -26,6 +26,7 @@ body{
     animation-iteration-count: infinite;
     animation-timing-function: ease-out;
     z-index: 9999999;
+    /* box-shadow: 0 0 0 30px rgb(255,0,0, .5); */
 }
 
 @keyframes wave{
@@ -44,6 +45,7 @@ body{
 }
 
 #stage{
+    display: none;
     position: absolute;
     width: 90%;
     top: 50%;
